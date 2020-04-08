@@ -1,0 +1,146 @@
+2020-04-08 10:08:36 INFO     Model information...
+2020-04-08 10:08:36 INFO     	cuda = False
+2020-04-08 10:08:36 INFO     	do_train = True
+2020-04-08 10:08:36 INFO     	do_valid = True
+2020-04-08 10:08:36 INFO     	do_test = True
+2020-04-08 10:08:36 INFO     	evaluate_train = False
+2020-04-08 10:08:36 INFO     	model = TuckER
+2020-04-08 10:08:36 INFO     	data_path = ../data/wn18rr
+2020-04-08 10:08:36 INFO     	hidden_dim = 256
+2020-04-08 10:08:36 INFO     	ent_embed_dim = 200
+2020-04-08 10:08:36 INFO     	num_heads = 8
+2020-04-08 10:08:36 INFO     	rel_embed_dim = 200
+2020-04-08 10:08:36 INFO     	embed_dim = 256
+2020-04-08 10:08:36 INFO     	gamma = 0.01
+2020-04-08 10:08:36 INFO     	batch_size = 2
+2020-04-08 10:08:36 INFO     	test_batch_size = 4
+2020-04-08 10:08:36 INFO     	learning_rate = 0.01
+2020-04-08 10:08:36 INFO     	adam_weight_decay = 3e-08
+2020-04-08 10:08:36 INFO     	adam_beta1 = 0.9
+2020-04-08 10:08:36 INFO     	adam_beta2 = 0.98
+2020-04-08 10:08:36 INFO     	cpu_num = 6
+2020-04-08 10:08:36 INFO     	init_checkpoint = None
+2020-04-08 10:08:36 INFO     	save_path = ../models/wn18rr
+2020-04-08 10:08:36 INFO     	max_steps = 40000
+2020-04-08 10:08:36 INFO     	warm_up_ratio = 0.1
+2020-04-08 10:08:36 INFO     	warm_up_steps = 40000
+2020-04-08 10:08:36 INFO     	reszero = 1
+2020-04-08 10:08:36 INFO     	save_checkpoint_steps = 10000
+2020-04-08 10:08:36 INFO     	valid_steps = 1000
+2020-04-08 10:08:36 INFO     	log_steps = 10
+2020-04-08 10:08:36 INFO     	test_log_steps = 2000
+2020-04-08 10:08:36 INFO     	nentity = 0
+2020-04-08 10:08:36 INFO     	nrelation = 0
+2020-04-08 10:08:36 INFO     	ntriples = 0
+2020-04-08 10:08:36 INFO     	att_drop = 0.2
+2020-04-08 10:08:36 INFO     	input_drop = 0.25
+2020-04-08 10:08:36 INFO     	fea_drop = 0.2
+2020-04-08 10:08:36 INFO     	edge_drop = 0.2
+2020-04-08 10:08:36 INFO     	top_k = 2
+2020-04-08 10:08:36 INFO     	topk_type = global
+2020-04-08 10:08:36 INFO     	hops = 2
+2020-04-08 10:08:36 INFO     	layers = 2
+2020-04-08 10:08:36 INFO     	alpha = 0.8
+2020-04-08 10:08:36 INFO     	slope = 0.2
+2020-04-08 10:08:36 INFO     	clip = 1.0
+2020-04-08 10:08:36 INFO     	patience = 30
+2020-04-08 10:08:36 INFO     	loss_type = 1
+2020-04-08 10:08:36 INFO     	feed_forward = 1
+2020-04-08 10:08:36 INFO     	graph_on = 1
+2020-04-08 10:08:36 INFO     	trans_on = 0
+2020-04-08 10:08:36 INFO     	mask_on = 1
+2020-04-08 10:08:36 INFO     	neg_on = 0
+2020-04-08 10:08:36 INFO     	neg_epoch_step = 50
+2020-04-08 10:08:36 INFO     	project_on = 1
+2020-04-08 10:08:36 INFO     	inverse_relation = True
+2020-04-08 10:08:36 INFO     	seed = 1
+2020-04-08 10:08:36 INFO     	self_loop = 1
+2020-04-08 10:08:36 INFO     	conv_embed_shape1 = 16
+2020-04-08 10:08:36 INFO     	conv_channels = 64
+2020-04-08 10:08:36 INFO     	conv_filter_size = 3
+2020-04-08 10:08:36 INFO     	conv_bias = True
+2020-04-08 10:08:37 INFO     Model: TuckER
+2020-04-08 10:08:37 INFO     Data Path: ../data/wn18rr
+2020-04-08 10:08:37 INFO     #entity: 40943
+2020-04-08 10:08:37 INFO     #relation: 11
+2020-04-08 10:08:37 INFO     #train: 86835
+2020-04-08 10:08:37 INFO     #valid: 3034
+2020-04-08 10:08:37 INFO     #test: 3134
+2020-04-08 10:08:37 INFO     Constructing graph...
+2020-04-08 10:08:37 INFO     Constructing graph takes 0.17 seconds
+2020-04-08 10:08:37 INFO     Graph information (nodes = 40943, edges=214613)
+2020-04-08 10:08:37 INFO     Model Parameter Configuration:
+2020-04-08 10:08:37 INFO     Parameter entity_embedding: torch.Size([40943, 200]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter relation_embedding: torch.Size([23, 200]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter ent_map.weight: torch.Size([256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter rel_map.weight: torch.Size([256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.attn_h: torch.Size([1, 8, 32]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.attn_t: torch.Size([1, 8, 32]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.attn_r: torch.Size([1, 8, 32]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.resweight_ent_1: torch.Size([1]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.resweight_ent_2: torch.Size([1]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.resweight_rel: torch.Size([1]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.fc_ent.weight: torch.Size([256, 200]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.fc_rel.weight: torch.Size([256, 200]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.fc_ent_out.weight: torch.Size([256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.ent_feed_forward.w_1.weight: torch.Size([1024, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.ent_feed_forward.w_1.bias: torch.Size([1024]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.ent_feed_forward.w_2.weight: torch.Size([256, 1024]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.ent_feed_forward.w_2.bias: torch.Size([256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.res_fc_ent.weight: torch.Size([256, 200]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.0.res_fc_rel.weight: torch.Size([256, 200]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.attn_h: torch.Size([1, 8, 32]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.attn_t: torch.Size([1, 8, 32]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.attn_r: torch.Size([1, 8, 32]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.resweight_ent_1: torch.Size([1]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.resweight_ent_2: torch.Size([1]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.resweight_rel: torch.Size([1]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.fc_ent.weight: torch.Size([256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.fc_rel.weight: torch.Size([256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.fc_ent_out.weight: torch.Size([256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.ent_feed_forward.w_1.weight: torch.Size([1024, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.ent_feed_forward.w_1.bias: torch.Size([1024]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.ent_feed_forward.w_2.weight: torch.Size([256, 1024]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter dag_entity_encoder.trans_layers.1.ent_feed_forward.w_2.bias: torch.Size([256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter score_function.W: torch.Size([256, 256, 256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter score_function.bn0.weight: torch.Size([256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter score_function.bn0.bias: torch.Size([256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter score_function.bn1.weight: torch.Size([256]), require_grad = True
+2020-04-08 10:08:37 INFO     Parameter score_function.bn1.bias: torch.Size([256]), require_grad = True
+2020-04-08 10:08:37 INFO     Ramdomly Initializing TuckER Graph Model...
+2020-04-08 10:08:37 INFO     Start Training...
+2020-04-08 10:08:37 INFO     init_step = 0
+2020-04-08 10:08:37 INFO     batch_size = 2
+2020-04-08 10:08:37 INFO     hidden_dim = 256
+2020-04-08 10:08:37 INFO     gamma = 0.010000
+2020-04-08 10:08:44 INFO     learning_rate = 0.010000
+2020-04-08 10:08:46 INFO     Training average loss at step 0: 10.211074
+2020-04-08 10:08:48 INFO     Training average loss at step 10: 9.433407
+2020-04-08 10:08:49 INFO     Training average loss at step 20: 9.472285
+2020-04-08 10:08:50 INFO     Training average loss at step 30: 9.871331
+2020-04-08 10:08:51 INFO     Training average loss at step 40: 9.360902
+2020-04-08 10:08:52 INFO     Training average loss at step 50: 9.473644
+2020-04-08 10:08:53 INFO     Training average loss at step 60: 9.374987
+2020-04-08 10:08:54 INFO     Training average loss at step 70: 9.529515
+2020-04-08 10:08:55 INFO     Training average loss at step 80: 9.659026
+2020-04-08 10:08:57 INFO     Training average loss at step 90: 9.344641
+2020-04-08 10:08:58 INFO     Training average loss at step 100: 9.602687
+2020-04-08 10:08:58 INFO     Evaluating on Valid Dataset...
+2020-04-08 10:08:58 INFO     Evaluating the model... (0)
+2020-04-08 10:10:04 INFO     Valid MRR at step 100: 0.002520
+2020-04-08 10:10:04 INFO     Valid MR at step 100: 20893.464239
+2020-04-08 10:10:04 INFO     Valid HITS@1 at step 100: 0.001978
+2020-04-08 10:10:04 INFO     Valid HITS@3 at step 100: 0.002142
+2020-04-08 10:10:04 INFO     Valid HITS@10 at step 100: 0.003296
+2020-04-08 10:10:06 INFO     Training average loss at step 110: 9.534232
+2020-04-08 10:10:07 INFO     Training average loss at step 120: 9.448177
+2020-04-08 10:10:08 INFO     Training average loss at step 130: 9.390555
+2020-04-08 10:10:09 INFO     Training average loss at step 140: 9.676910
+2020-04-08 10:10:10 INFO     Training average loss at step 150: 9.419500
+2020-04-08 10:10:11 INFO     Training average loss at step 160: 9.791206
+2020-04-08 10:10:13 INFO     Training average loss at step 170: 9.557413
+2020-04-08 10:10:14 INFO     Training average loss at step 180: 9.603816
+2020-04-08 10:10:15 INFO     Training average loss at step 190: 9.706766
+2020-04-08 10:10:16 INFO     Training average loss at step 200: 9.300947
+2020-04-08 10:10:16 INFO     Evaluating on Valid Dataset...
+2020-04-08 10:10:17 INFO     Evaluating the model... (0)

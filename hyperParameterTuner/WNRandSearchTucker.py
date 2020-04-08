@@ -28,7 +28,7 @@ def HypeParameterSpace(model_name):
     max_steps = {'name': 'max_steps', 'type': 'fixed', 'value': 100000}
     layers = {'name': 'layers', 'type': 'choice', 'values': [2, 3]}
     alpha = {'name': 'alpha', 'type': 'range', 'bounds': [0.3, 0.8]}
-    hops = {'name': 'hops', 'type': 'choice', 'values': [4, 5]}
+    hops = {'name': 'hops', 'type': 'choice', 'values': [3, 4]}
     feed_forward = {'name': 'feed_forward', 'type': 'fixed', 'value': 0}
     topk_type = {'name': 'topk_type', 'type': 'fixed', 'value': 'local'}
     adam_weight_decay = {'name': 'adam_weight_decay', 'type': 'range', 'bounds': [1e-7, 1e-9], "log_scale": True}

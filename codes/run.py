@@ -212,6 +212,12 @@ def train_dag_kge_model(args, train_graph, nentity, nrelation, ntriples, all_tru
     if max_step < 400 * step_in_epoch:
         max_step = 400 * step_in_epoch
     args.max_step = max_step
+
+    warm_up_step = args.warm_up_steps
+    if warm_up_step > 0:
+        warm_up_step = 300 * step_in_epoch
+    args.warm_up_steps = warm_up_step
+
     #+++++++
     kge_model = KGEModel(nentity=nentity, nrelation=nrelation, ntriples=ntriples, args=args)
     if args.cuda:
@@ -291,7 +297,7 @@ def train_dag_kge_model(args, train_graph, nentity, nrelation, ntriples, all_tru
         # +++++++++++++++++++
         init_step = 0
         graph = train_graph
-        num_warmup_steps = int(args.epochs * args.warm_up_ratio)
+        num_warmup_steps = int(args.max_steps * args.warm_up_ratio)
         current_learning_rate = args.learning_rate
         if args.adam_weight_decay <= 0:
             adam_weight_decay = 0
@@ -300,7 +306,7 @@ def train_dag_kge_model(args, train_graph, nentity, nrelation, ntriples, all_tru
         optimizer_graph = AdamW(params=filter(lambda p: p.requires_grad, kge_model.parameters()), lr=current_learning_rate,
                                 weight_decay=adam_weight_decay,
                                 correct_bias=False)  # To reproduce BertAdam specific behavior set correct_bias=False
-        scheduler_graph = WarmupCosineSchedule(optimizer_graph, warmup_steps=num_warmup_steps, t_total=args.epochs)  # PyTorch scheduler
+        scheduler_graph = WarmupCosineSchedule(optimizer_graph, warmup_steps=num_warmup_steps, t_total=args.max_steps)  # PyTorch scheduler
         # ++++++++++++++++++++++++++++++++++
         # Training Loop
         best_valid_mrr = 0.0

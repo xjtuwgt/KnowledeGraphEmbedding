@@ -18,7 +18,6 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 import numpy as np
 import torch
-
 from torch.utils.data import DataLoader
 from kgembedUtils.ioutils import save_model
 from kgembedUtils.kgutils import build_graph_from_triples, build_graph_from_triples_without_loop
@@ -42,7 +41,6 @@ def parse_args(args=None):
     parser.add_argument('--do_test', default=True, action='store_true')
     parser.add_argument('--evaluate_train', action='store_true', help='Evaluate on training data')
     parser.add_argument('--model', default='TuckER', type=str)
-
     parser.add_argument('--data_path', type=str, default='../data/wn18rr')
 
     parser.add_argument('-d', '--hidden_dim', default=256, type=int)
@@ -63,7 +61,7 @@ def parse_args(args=None):
     parser.add_argument('-save', '--save_path', default='../models/wn18rr', type=str)
     parser.add_argument('--max_steps', default=40000, type=int)
     parser.add_argument('--warm_up_ratio', default=0.1, type=float)
-    parser.add_argument('--warm_up_steps', default=40000, type=int)
+    parser.add_argument('--warm_up_steps', default=40000, type=int) # For DistMult based warm-up for KG embedding
     parser.add_argument('--reszero', default=1, type=int)
 
     parser.add_argument('--save_checkpoint_steps', default=10000, type=int)
@@ -80,7 +78,7 @@ def parse_args(args=None):
     parser.add_argument("--fea_drop", type=float, default=0.2, help="feature drop out")
     parser.add_argument("--edge_drop", type=float, default=0.2, help="graph edge drop out")
     parser.add_argument("--top_k", type=int, default=2, help="top k")
-    parser.add_argument("--topk_type", type=str, default='global', help="top k type")
+    parser.add_argument("--topk_type", type=str, default='local', help="top k type")
     parser.add_argument("--hops", type=int, default=2, help="hop number")
     parser.add_argument("--layers", type=int, default=2, help="number of layers")
     parser.add_argument("--alpha", type=float, default=0.8, help="random walk with restart")
@@ -148,7 +146,6 @@ def graph_construction(args, triples, num_entities, num_relations):
     else:
         graph = build_graph_from_triples_without_loop(num_nodes=num_entities, num_relations=num_relations,
                                                  triples=np.array(triples, dtype=np.int64).transpose())
-
     logging.info('Graph information (nodes = {}, edges={})'.format(graph.number_of_nodes(), graph.number_of_edges()))
     if with_cuda:
         for key, value in graph.ndata.items():
@@ -216,7 +213,6 @@ def train_dag_kge_model(args, train_graph, nentity, nrelation, ntriples, all_tru
         max_step = 400 * step_in_epoch
     args.max_step = max_step
     #+++++++
-
     kge_model = KGEModel(nentity=nentity, nrelation=nrelation, ntriples=ntriples, args=args)
     if args.cuda:
         kge_model = kge_model.cuda()
@@ -255,55 +251,56 @@ def train_dag_kge_model(args, train_graph, nentity, nrelation, ntriples, all_tru
 
         logging.info('learning_rate = %f' % args.learning_rate)
         training_logs = []
+        if args.warm_up_steps > 0:
+            # ++++++++++++++++++++++++++++++++++
+            graph = None
+            current_learning_rate = args.learning_rate
+            if args.adam_weight_decay <= 0:
+                adam_weight_decay = 0
+            else:
+                adam_weight_decay = args.adam_weight_decay
+            optimizer = Adam(params=filter(lambda p: p.requires_grad, kge_model.parameters()),
+                             lr=current_learning_rate, betas=(args.adam_beta1, args.adam_beta2),
+                             weight_decay=adam_weight_decay)
+            scheduler = CosineAnnealingLR(optimizer=optimizer, T_max=args.max_steps, eta_min=1e-6)
+            # ++++++++++++++++++++++++++++++++++
+            for step in range(init_step, args.warm_up_steps):
+                log = kge_model.train_step(kge_model, graph, optimizer, train_iterator, args, True)
+                scheduler.step()
+                training_logs.append(log)
+                if step % args.log_steps == 0:
+                    metrics = {}
+                    for metric in training_logs[0].keys():
+                        metrics[metric] = sum([log[metric] for log in training_logs]) / len(training_logs)
+                    log_metrics('Training average', step, metrics)
+                    training_logs = []
+                if args.do_valid and step % 5000 == 0 and step > 0:
+                    logging.info('Evaluating on Valid Dataset...')
+                    metrics = kge_model.test_step(kge_model, graph, valid_triples, all_true_triples, args, None, True)
+                    log_metrics('Valid', step, metrics)
 
-        # ++++++++++++++++++++++++++++++++++
-        graph = None
+            if args.do_valid:
+                logging.info('Evaluating on Valid Dataset...')
+                metrics = kge_model.test_step(kge_model, graph, valid_triples, all_true_triples, args, None,  True)
+                log_metrics('Valid', step, metrics)
+            if args.do_test:
+                logging.info('Evaluating on Test Dataset...')
+                metrics = kge_model.test_step(kge_model, graph, test_triples, all_true_triples, args, None, True)
+                log_metrics('Test', step, metrics)
+        # +++++++++++++++++++
+        # +++++++++++++++++++
+        init_step = 0
+        graph = train_graph
+        num_warmup_steps = int(args.epochs * args.warm_up_ratio)
         current_learning_rate = args.learning_rate
         if args.adam_weight_decay <= 0:
             adam_weight_decay = 0
         else:
             adam_weight_decay = args.adam_weight_decay
-        optimizer = Adam(params=filter(lambda p: p.requires_grad, kge_model.parameters()),
-                         lr=current_learning_rate, betas=(args.adam_beta1, args.adam_beta2),
-                         weight_decay=adam_weight_decay)
-        scheduler = CosineAnnealingLR(optimizer=optimizer, T_max=args.max_steps, eta_min=1e-6)
-        # ++++++++++++++++++++++++++++++++++
-        for step in range(init_step, args.warm_up_steps):
-            log = kge_model.train_step(kge_model, graph, optimizer, train_iterator, args, True)
-            scheduler.step()
-            training_logs.append(log)
-            if step % args.log_steps == 0:
-                metrics = {}
-                for metric in training_logs[0].keys():
-                    metrics[metric] = sum([log[metric] for log in training_logs]) / len(training_logs)
-                log_metrics('Training average', step, metrics)
-                training_logs = []
-            if args.do_valid and step % 5000 == 0 and step > 0:
-                logging.info('Evaluating on Valid Dataset...')
-                metrics = kge_model.test_step(kge_model, graph, valid_triples, all_true_triples, args, None, True)
-                log_metrics('Valid', step, metrics)
-
-        if args.do_valid:
-            logging.info('Evaluating on Valid Dataset...')
-            metrics = kge_model.test_step(kge_model, graph, valid_triples, all_true_triples, args, None,  True)
-            log_metrics('Valid', step, metrics)
-        if args.do_test:
-            logging.info('Evaluating on Test Dataset...')
-            metrics = kge_model.test_step(kge_model, graph, test_triples, all_true_triples, args, None, True)
-            log_metrics('Test', step, metrics)
-        # +++++++++++++++++++
-        graph = train_graph
-        num_warmup_steps = int(args.epochs * 0.1)
-        current_learning_rate = args.learning_rate
-        if args.adam_weight_decay == -1:
-            optimizer_graph = AdamW(params=filter(lambda p: p.requires_grad, kge_model.parameters()), lr=current_learning_rate,
-                                    correct_bias=False)  # To reproduce BertAdam specific behavior set correct_bias=False
-        else:
-            optimizer_graph = AdamW(params=filter(lambda p: p.requires_grad, kge_model.parameters()), lr=current_learning_rate,
-                                    weight_decay=args.adam_weight_decay,
-                                    correct_bias=False)  # To reproduce BertAdam specific behavior set correct_bias=False
-        scheduler_graph = WarmupCosineSchedule(optimizer_graph, warmup_steps=num_warmup_steps,
-                                               t_total=args.epochs)  # PyTorch scheduler
+        optimizer_graph = AdamW(params=filter(lambda p: p.requires_grad, kge_model.parameters()), lr=current_learning_rate,
+                                weight_decay=adam_weight_decay,
+                                correct_bias=False)  # To reproduce BertAdam specific behavior set correct_bias=False
+        scheduler_graph = WarmupCosineSchedule(optimizer_graph, warmup_steps=num_warmup_steps, t_total=args.epochs)  # PyTorch scheduler
         # ++++++++++++++++++++++++++++++++++
         # Training Loop
         best_valid_mrr = 0.0
@@ -361,10 +358,8 @@ def train_dag_kge_model(args, train_graph, nentity, nrelation, ntriples, all_tru
 def main(args):
     random_seed = args.seed
     set_seeds(random_seed)
-
     if (not args.do_train) and (not args.do_valid) and (not args.do_test):
         raise ValueError('one of train/val/test mode must be choosed.')
-
 
     if args.do_train and args.save_path is None:
         raise ValueError('Where do you want to save your trained model?')
@@ -374,7 +369,6 @@ def main(args):
 
     # Write logs to checkpoint and console
     set_logger(args)
-
     logging.info("Model information...")
     for key, value in vars(args).items():
         logging.info('\t{} = {}'.format(key, value))

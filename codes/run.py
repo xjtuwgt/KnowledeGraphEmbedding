@@ -61,7 +61,7 @@ def parse_args(args=None):
     parser.add_argument('-save', '--save_path', default='../models/wn18rr', type=str)
     parser.add_argument('--max_steps', default=40000, type=int)
     parser.add_argument('--warm_up_ratio', default=0.1, type=float)
-    parser.add_argument('--warm_up_steps', default=40000, type=int) # For DistMult based warm-up for KG embedding
+    parser.add_argument('--warm_up_steps', default=-1, type=int) # For DistMult based warm-up for KG embedding
     parser.add_argument('--reszero', default=1, type=int)
 
     parser.add_argument('--save_checkpoint_steps', default=10000, type=int)
